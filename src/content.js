@@ -9,12 +9,14 @@ window.__PageRuler = {
         ruler: null,
         guides: null
     },
+    screenshot: new Image(),
+    canvas: document.createElement("canvas"),
     enable: function() {
         var _this = this;
         var styles = this.El.createEl("link", {
             id: "styles",
             rel: "stylesheet",
-            href: chrome.extension.getURL("content.css") + "?" + this.version
+            href: chrome.runtime.getURL("content.css") + "?" + this.version
         });
         this.El.appendEl(document.head || document.body || document.documentElement, styles);
         this.elements.toolbar = new this.el.Toolbar();
@@ -120,6 +122,14 @@ window.__PageRuler = {
     cls: function(constructor, prototype) {
         constructor.prototype = prototype;
         return constructor;
+    },
+    greyscaleConvert: function(imgData) {
+        var grey = new Int16Array(imgData.length / 4);
+        for (var i = 0, n = 0; i < imgData.length; i += 4, n++) {
+            var r = imgData[i], g = imgData[i + 1], b = imgData[i + 2];
+            grey[n] = Math.round(r * .2126 + g * .7152 + b * .0722);
+        }
+        return grey;
     }
 };
 
@@ -580,7 +590,7 @@ window.__PageRuler = {
             });
             var upImg = pr.El.createEl("img", {
                 id: "element-toolbar-navigate-up-img",
-                src: chrome.extension.getURL("images/arrow-up.png")
+                src: chrome.runtime.getURL("images/arrow-up.png")
             });
             this.els.up = this.generateTagContainer("up");
             pr.El.appendEl(this.els.upContainer, [ upImg, this.els.up ]);
@@ -594,7 +604,7 @@ window.__PageRuler = {
             });
             var downImg = pr.El.createEl("img", {
                 id: "element-toolbar-navigate-down-img",
-                src: chrome.extension.getURL("images/arrow-down.png")
+                src: chrome.runtime.getURL("images/arrow-down.png")
             });
             this.els.down = this.generateTagContainer("down");
             pr.El.appendEl(this.els.downContainer, [ downImg, this.els.down ]);
@@ -608,7 +618,7 @@ window.__PageRuler = {
             });
             var previousImg = pr.El.createEl("img", {
                 id: "element-toolbar-navigate-previous-img",
-                src: chrome.extension.getURL("images/arrow-left.png")
+                src: chrome.runtime.getURL("images/arrow-left.png")
             });
             this.els.previous = this.generateTagContainer("previous");
             pr.El.appendEl(this.els.previousContainer, [ previousImg, this.els.previous ]);
@@ -622,7 +632,7 @@ window.__PageRuler = {
             });
             var nextImg = pr.El.createEl("img", {
                 id: "element-toolbar-navigate-next-img",
-                src: chrome.extension.getURL("images/arrow-right.png")
+                src: chrome.runtime.getURL("images/arrow-right.png")
             });
             this.els.next = this.generateTagContainer("next");
             pr.El.appendEl(this.els.nextContainer, [ nextImg, this.els.next ]);
@@ -1091,34 +1101,77 @@ window.__PageRuler = {
                 _this.guides.hide();
             }
             setTimeout(function() {
+                const yOffset =  _this.toolbar.height - window.pageYOffset;
+                const devicePixelRatio = window.devicePixelRatio;
+
                 chrome.runtime.sendMessage({
-                    action: "borderSearch",
-                    x: x,
-                    y: y,
-                    xDir: xDir,
-                    yDir: yDir,
-                    yOffset: _this.toolbar.height - window.pageYOffset,
-                    devicePixelRatio: window.devicePixelRatio
-                }, function(response) {
-                    if (leftOrRight === "left") {
-                        var newWidth = _this.width + (_this.left - response.x);
-                        _this.setLeft(response.x);
-                        _this.setWidth(newWidth);
-                    } else {
-                        _this.setWidth(_this.width + (response.x - _this.right));
-                    }
-                    if (topOrBottom === "top") {
-                        var newHeight = _this.height + (_this.top - response.y);
-                        _this.setTop(response.y);
-                        _this.setHeight(newHeight);
-                    } else {
-                        _this.setHeight(_this.height + (response.y - _this.bottom));
-                    }
-                    pr.elements.mask.dom.style.removeProperty("display");
-                    _this.ruler.style.removeProperty("display");
-                    if (_this.guides.visible) {
-                        _this.guides.show();
-                    }
+                    action: "borderSearch"
+                }, ({ width, height, dataUrl }) => {
+                    __PageRuler.screenshot.onload = function() {
+                        var ctx = __PageRuler.canvas.getContext("2d");
+                        __PageRuler.canvas.width = width;
+                        __PageRuler.canvas.height = height;
+                        ctx.drawImage(__PageRuler.screenshot, 0, 0, __PageRuler.canvas.width, __PageRuler.canvas.height);
+                        var startX = Math.floor(x * devicePixelRatio);
+                        var startY = Math.floor(y * devicePixelRatio + yOffset * devicePixelRatio);
+                        var imageLine;
+                        if (xDir > 0) {
+                            imageLine = ctx.getImageData(startX, startY, __PageRuler.canvas.width - startX, 1).data;
+                        } else if (xDir < 0) {
+                            imageLine = ctx.getImageData(0, startY, startX + 1, 1).data;
+                        } else if (yDir > 0) {
+                            imageLine = ctx.getImageData(startX, startY, 1, __PageRuler.canvas.height - startY).data;
+                        } else {
+                            imageLine = ctx.getImageData(startX, 0, 1, startY + 1).data;
+                        }
+                        var gsData = __PageRuler.greyscaleConvert(imageLine);
+                        var startPixel;
+                        var index = 0;
+                        var direction = 1;
+                        var checks = 0;
+                        var nextPixel;
+                        var threshHold = 10;
+                        if (xDir < 0 || yDir < 0) {
+                            index = gsData.length - 1;
+                            direction = -1;
+                        }
+                        startPixel = gsData[index];
+                        index += direction;
+                        while (index >= 0 && index < gsData.length) {
+                            nextPixel = gsData[index];
+                            checks++;
+                            if (Math.abs(startPixel - nextPixel) > threshHold) {
+                                break;
+                            }
+                            index += direction;
+                        }
+                        var spotsToMove = checks <= 1 ? checks : checks - 1;
+                        var response = {
+                            x: Math.floor((startX + spotsToMove * xDir) / devicePixelRatio),
+                            y: Math.floor((startY + spotsToMove * yDir - yOffset * devicePixelRatio) / devicePixelRatio)
+                        };
+
+                        if (leftOrRight === "left") {
+                            var newWidth = _this.width + (_this.left - response.x);
+                            _this.setLeft(response.x);
+                            _this.setWidth(newWidth);
+                        } else {
+                            _this.setWidth(_this.width + (response.x - _this.right));
+                        }
+                        if (topOrBottom === "top") {
+                            var newHeight = _this.height + (_this.top - response.y);
+                            _this.setTop(response.y);
+                            _this.setHeight(newHeight);
+                        } else {
+                            _this.setHeight(_this.height + (response.y - _this.bottom));
+                        }
+                        pr.elements.mask.dom.style.removeProperty("display");
+                        _this.ruler.style.removeProperty("display");
+                        if (_this.guides.visible) {
+                            _this.guides.show();
+                        }
+                    };
+                    __PageRuler.screenshot.src = dataUrl;
                 });
             }, 1);
         },
@@ -1544,7 +1597,7 @@ window.__PageRuler = {
             }, {}, pr.Util.locale("toolbarEnableElementMode"));
             var img = pr.El.createEl("img", {
                 id: "toolbar-element-toggle-img",
-                src: chrome.extension.getURL("images/element-mode-toggle.png")
+                src: chrome.runtime.getURL("images/element-mode-toggle.png")
             });
             var container = pr.El.createEl("div", {
                 id: "toolbar-element-toggle",
@@ -1724,7 +1777,7 @@ window.__PageRuler = {
             });
             var img = pr.El.createEl("img", {
                 id: "toolbar-close",
-                src: chrome.extension.getURL("images/close.png"),
+                src: chrome.runtime.getURL("images/close.png"),
                 title: pr.Util.locale("toolbarClose", "lowercase")
             }, {
                 click: function(e) {
@@ -1743,7 +1796,7 @@ window.__PageRuler = {
             });
             this.els.help = pr.El.createEl("img", {
                 id: "toolbar-help",
-                src: chrome.extension.getURL("images/help-white.png"),
+                src: chrome.runtime.getURL("images/help-white.png"),
                 title: pr.Util.locale("toolbarHelp", "lowercase")
             }, {
                 click: function(e) {
@@ -1763,7 +1816,7 @@ window.__PageRuler = {
             });
             this.els.dock = pr.El.createEl("img", {
                 id: "toolbar-dock",
-                src: chrome.extension.getURL("images/dock-bottom.png"),
+                src: chrome.runtime.getURL("images/dock-bottom.png"),
                 title: pr.Util.locale("toolbarDockBottom", "lowercase")
             }, {
                 click: function(e) {
@@ -1781,7 +1834,7 @@ window.__PageRuler = {
             pr.El.removeClass(this.dom, "page-ruler-" + oldPosition);
             this.position = position;
             pr.El.addClass(this.dom, "page-ruler-" + position);
-            this.els.dock.setAttribute("src", chrome.extension.getURL("images/dock-" + oldPosition + ".png"));
+            this.els.dock.setAttribute("src", chrome.runtime.getURL("images/dock-" + oldPosition + ".png"));
             this.els.dock.setAttribute("title", pr.Util.locale("toolbarDock" + (oldPosition === "top" ? "Top" : "Bottom"), "lowercase"));
             this.shiftPage();
             if (!!save) {
