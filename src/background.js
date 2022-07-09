@@ -62,7 +62,6 @@ var PageRuler = {
     },
     action: function(tab) {
         var tabId = tab.id;
-        
         chrome.scripting.executeScript({
             target: { tabId },
             func: () => {
