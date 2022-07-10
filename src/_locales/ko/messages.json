@@ -15,97 +15,97 @@
 	},
 
 	"toolbarWidth": {
-		"message": "Width",
+		"message": "폭",
 		"description": "Label for the width input in the toolbar"
 	},
 
 	"toolbarHeight": {
-		"message": "Height",
+		"message": "높이",
 		"description": "Label for the height input in the toolbar"
 	},
 
 	"toolbarLeft": {
-		"message": "Left",
+		"message": "왼쪽",
 		"description": "Label for the left input in the toolbar"
 	},
 
 	"toolbarRight": {
-		"message": "Right",
+		"message": "오른쪽",
 		"description": "Label for the right input in the toolbar"
 	},
 
 	"toolbarTop": {
-		"message": "Top",
+		"message": "위",
 		"description": "Label for the top input in the toolbar"
 	},
 
 	"toolbarBottom": {
-		"message": "Bottom",
+		"message": "아래",
 		"description": "Label for the bottom input in the toolbar"
 	},
 
 	"toolbarColor": {
-		"message": "Color",
-		"description": "Label for the color picker in the toolbar"
+		"message": "영역 색상",
+		"description": "Label for the area color picker in the toolbar"
 	},
 
 	"toolbarClose": {
-		"message": "Close",
+		"message": "닫기",
 		"description": "Tooltip for the toolbar close button which closes the addon"
 	},
 
 	"toolbarEnableElementMode": {
-		"message": "Enable Element Mode",
+		"message": "요소 모드 활성화",
 		"description": "Label for the enable element mode button (element as in HTML element)"
 	},
 
 	"toolbarDisableElementMode": {
-		"message": "Disable Element Mode",
+		"message": "요소 모드 비활성화",
 		"description": "Label for the disable element mode button (element as in HTML element)"
 	},
 
 	"elementToolbarHelp": {
-		"message": "Use tracking mode to move over the page and highlight elements. Click an element to disable tracking mode.",
+		"message": "추적 모드를 사용하여 페이지를 훑고 요소를 강조할 수 있습니다. 요소를 클릭하면 추적 모드는 꺼집니다.",
 		"description": "Help message for the element toolbar"
 	},
 
 	"elementToolbarHighlightedElement": {
-		"message": "Highlighted element",
+		"message": "강조된 요소",
 		"description": "Title for the highlighted element in tracking mode"
 	},
 
 	"elementToolbarParentNode": {
-		"message": "Parent node",
+		"message": "부모 노드",
 		"description": "Title for the parent node of the highlighted element in tracking mode"
 	},
 
 	"elementToolbarChildNode": {
-		"message": "Child node",
+		"message": "자식 노드",
 		"description": "Title for the child node of the highlighted element in tracking mode"
 	},
 
 	"elementToolbarPreviousSibling": {
-		"message": "Previous sibling node",
+		"message": "이전 형제 노드",
 		"description": "Title for the previous sibling node of the highlighted element in tracking mode"
 	},
 
 	"elementToolbarNextSibling": {
-		"message": "Next sibling node",
+		"message": "다음 형제 노드",
 		"description": "Title for the next sibling node of the highlighted element in tracking mode"
 	},
 
 	"elementToolbarTrackingMode": {
-		"message": "Tracking Mode",
+		"message": "추적 모드",
 		"description": "Label for the tracking mode toggle button"
 	},
 
 	"elementToolbarToggleOn": {
-		"message": "On",
+		"message": "켜짐",
 		"description": "The on state text for the tracking mode toggle button"
 	},
 
 	"elementToolbarToggleOff": {
-		"message": "Off",
+		"message": "꺼짐",
 		"description": "The off state text for the tracking mode toggle button"
 	},
 
@@ -222,12 +222,12 @@
 	// version 2.0.6
 
 	"toolbarDockBottom": {
-		"message": "Dock toolbar to the bottom of the page",
+		"message": "툴바를 아래쪽으로 이동",
 		"description": "Tooltip for the dock bottom image"
 	},
 
 	"toolbarDockTop": {
-		"message": "Dock toolbar to the top of the page",
+		"message": "툴바를 위쪽으로 이동",
 		"description": "Tooltip for the dock top image"
 	},
 
@@ -304,7 +304,7 @@
 	// version 2.0.7
 
 	"toolbarGuides": {
-		"message": "Show Guides",
+		"message": "가이드 표시",
 		"description": "Label for the show guides toggle in the toolbar"
 	},
 
@@ -360,12 +360,12 @@
 	},
 
 	"toolbarBorderSearch": {
-		"message": "Border Search",
+		"message": "경계 탐색",
 		"description": "Label for the show border search toggle in the toolbar"
 	},
 
 	"toolbarCrosshairColor": {
-		"message": "Crosshair Color",
+		"message": "십자선 색상",
 		"description": "Label for the crosshair color picker in the toolbar"
 	}
 }

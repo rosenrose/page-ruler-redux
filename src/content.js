@@ -1077,6 +1077,11 @@ window.__PageRuler = {
             }, function(color) {
                 _this.setColor(color, false);
             });
+            chrome.runtime.sendMessage({
+                action: "getCrosshairColor",
+            }, function (color) {
+                _this.setCrosshairColor(color, false);
+            });
         },
         show: function() {
             this.ruler.style.removeProperty("display");
@@ -1198,6 +1203,23 @@ window.__PageRuler = {
                     color: hex
                 });
             }
+        },
+        setCrosshairColor: function (hex, save) {
+          this.toolbar.setCrosshairColor(hex);
+          const crosshairSvg = `data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='0 0 25 25' fill='${encodeURIComponent(hex)}'%3E%3Cpolygon points='12 0, 12 12, 0 12, 0 13, 12 13, 12 25, 13 25, 13 13, 25 13, 25 12, 13 12, 13 0'/%3E%3C/svg%3E`;
+          const cursorStyle = `url("${crosshairSvg}") 12 12, crosshair`;
+  
+          document.querySelectorAll("#page-ruler-mask, #page-ruler-guides, #page-ruler-guides .page-ruler-guide")
+            .forEach((el) => {
+              el.style.setProperty("cursor", cursorStyle, "important");
+            });
+  
+          if (!!save) {
+            chrome.runtime.sendMessage({
+              action: "setCrosshairColor",
+              color: hex,
+            });
+          }
         },
         reset: function(config) {
             config = config || {};
@@ -1498,9 +1520,10 @@ window.__PageRuler = {
         var dimensionsContainer = this.generateDimensionsContainer();
         var positionContainer = this.generatePositionContainer();
         var colorContainer = this.generateColorContainer();
+        var crosshairColorContainer = this.generateCrosshairColorContainer();
         var guidesContainer = this.generateGuidesContainer();
         var borderSearchContainer = this.generateBorderSearchContainer();
-        pr.El.appendEl(container, [ closeContainer, dockContainer, helpContainer, elementModeContainer, dimensionsContainer, positionContainer, colorContainer, guidesContainer, borderSearchContainer ]);
+        pr.El.appendEl(container, [ closeContainer, dockContainer, helpContainer, elementModeContainer, dimensionsContainer, positionContainer, colorContainer, crosshairColorContainer, guidesContainer, borderSearchContainer ]);
         this.elementToolbar = new pr.el.ElementToolbar(this);
         pr.El.appendEl(this.dom, [ container, this.elementToolbar.dom ]);
         pr.El.appendEl(document.documentElement, this.dom);
@@ -1680,6 +1703,26 @@ window.__PageRuler = {
             pr.El.appendEl(container, [ label, this.els.color ]);
             return container;
         },
+        generateCrosshairColorContainer: function () {
+          var _this = this;
+          var container = pr.El.createEl("div", {
+            id: "toolbar-crosshair-color-container",
+            class: "container",
+          });
+          var label = pr.El.createEl("label", {
+              id: "toolbar-crosshair-color-label",
+              for: "toolbar-crosshair-color",
+            }, {}, pr.Util.locale("toolbarCrosshairColor") + ":");
+          this.els.crosshairColor = pr.El.createEl("input", {
+            id: "toolbar-crosshair-color",
+            type: "color",
+          });
+          pr.El.registerListener(this.els.crosshairColor, "change", function (e) {
+            _this.ruler.setCrosshairColor(e.target.value, true);
+          });
+          pr.El.appendEl(container, [label, this.els.crosshairColor]);
+          return container;
+        },
         generateGuidesContainer: function() {
             var guidesContainer = pr.El.createEl("div", {
                 id: "toolbar-guides-container",
@@ -1846,6 +1889,9 @@ window.__PageRuler = {
         },
         setColor: function(color) {
             this.els.color.value = color;
+        },
+        setCrosshairColor: function (color) {
+          this.els.crosshairColor.value = color;
         },
         setWidth: function(width) {
             this.els.width.value = parseInt(width, 10);

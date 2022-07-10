@@ -362,7 +362,6 @@ input[id^="page-ruler"][type="checkbox"] {
 	top: 0px !important;
 	left: 0px !important;
 	z-index: 2000004 !important;
-	cursor: url("images/crosshair.png") 12 12, crosshair !important;
 }
 #page-ruler {
 	position: absolute !important;
@@ -496,14 +495,12 @@ input[id^="page-ruler"][type="checkbox"] {
 	position: absolute !important;
 	top: 0px !important;
 	left: 0px !important;
-	cursor: url("images/crosshair.png") 12 12, crosshair !important;
 }
 #page-ruler-guides .page-ruler-guide {
 	position: absolute !important;
 	border-width: 1px !important;
 	border-style: dashed !important;
 	z-index: 2000005 !important;
-	cursor: url("images/crosshair.png") 12 12, crosshair !important;
 }
 #page-ruler-guides #page-ruler-guide-top-left {
 	top: 0px !important;

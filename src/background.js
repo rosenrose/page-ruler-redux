@@ -175,6 +175,22 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         });
         break;
 
+      case "setCrosshairColor":
+        console.log(`saving crosshair color ${message.color}`);
+        chrome.storage.sync.set({
+            crosshairColor: message.color,
+        });
+        break;
+    
+      case "getCrosshairColor":
+        console.log("requesting crosshair color");
+        chrome.storage.sync.get("crosshairColor", (items) => {
+            const color = items.crosshairColor || "#000";
+            console.log(`crosshair color requested: ${color}`);
+            sendResponse(color);
+        });
+        break;
+
       case "setDockPosition":
         console.log("saving dock position " + message.position);
         chrome.storage.sync.set({
