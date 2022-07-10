@@ -239,12 +239,13 @@ input[id^="page-ruler"][type="checkbox"] {
 #page-ruler-toolbar .page-ruler-dock-container,
 #page-ruler-toolbar .page-ruler-help-container {
   float: right !important;
-  padding: 5px !important; }
+  padding: 8px !important; }
 
 #page-ruler-toolbar .page-ruler-close-container img,
 #page-ruler-toolbar .page-ruler-dock-container img,
 #page-ruler-toolbar .page-ruler-help-container img {
-  cursor: pointer !important; }
+  cursor: pointer !important;
+  transform: scale(1.2); }
 
 #page-ruler-toolbar .page-ruler-px-container {
   display: inline !important;
