@@ -45,8 +45,8 @@
 	},
 
 	"toolbarColor": {
-		"message": "Color",
-		"description": "Label for the color picker in the toolbar"
+		"message": "Area Color",
+		"description": "Label for the area color picker in the toolbar"
 	},
 
 	"toolbarClose": {
