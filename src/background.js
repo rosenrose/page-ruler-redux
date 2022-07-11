@@ -185,7 +185,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       case "getCrosshairColor":
         console.log("requesting crosshair color");
         chrome.storage.sync.get("crosshairColor", (items) => {
-            const color = items.crosshairColor || "#000";
+            const color = items.crosshairColor || "#000000";
             console.log(`crosshair color requested: ${color}`);
             sendResponse(color);
         });
