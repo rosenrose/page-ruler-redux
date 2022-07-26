@@ -25,22 +25,22 @@
 	},
 
 	"toolbarLeft": {
-		"message": "왼쪽",
+		"message": "Left",
 		"description": "Label for the left input in the toolbar"
 	},
 
 	"toolbarRight": {
-		"message": "오른쪽",
+		"message": "Right",
 		"description": "Label for the right input in the toolbar"
 	},
 
 	"toolbarTop": {
-		"message": "위",
+		"message": "Top",
 		"description": "Label for the top input in the toolbar"
 	},
 
 	"toolbarBottom": {
-		"message": "아래",
+		"message": "Bottom",
 		"description": "Label for the bottom input in the toolbar"
 	},
 
